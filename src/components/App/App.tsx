@@ -35,7 +35,7 @@ export default class App extends Component {
 		}
 	};
 
-	onLoadMoreClick = (photos: Image[]) => {
+	onLoadMoreClick = (photos: Image[]): void => {
 		this.setState(state => {
 			return {
 				images: [...(state as State).images, ...photos],
