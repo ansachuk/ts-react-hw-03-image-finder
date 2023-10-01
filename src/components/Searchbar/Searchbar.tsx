@@ -1,38 +1,43 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import { ChangeEvent, Component, FormEvent } from "react";
+
 import { Notify } from "notiflix/build/notiflix-notify-aio";
 
-import { ReactComponent as SearchIcon } from "../../icons/searc.svg";
 import fetchPhotos from "../../services/fetchPhotos";
+
+import { Image } from "../../@types/types";
+
+import icons from "../../icons/search.svg";
 import css from "./Searchbar.module.css";
 
-export default class Searchbar extends Component {
-	static propTypes = {
-		toggleLoader: PropTypes.func.isRequired,
-		onSubmit: PropTypes.func.isRequired,
-	};
+type Props = {
+	onFetchPhotos(photos: Image[], query: string): void;
+	toggleLoader(): void;
+};
 
+type State = { query: string };
+
+export default class Searchbar extends Component<Props, State> {
 	state = {
 		query: "",
 	};
 
-	onInputChange = e => {
+	onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
 		this.setState({ query: e.currentTarget.value });
 	};
 
-	onSubmit = async e => {
+	onSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 
 		const {
 			state: { query },
-			props: { toggleLoader, onSubmit },
+			props: { toggleLoader, onFetchPhotos },
 		} = this;
 
 		if (query.trim() !== "") {
 			toggleLoader();
 			const images = await fetchPhotos(query);
 
-			onSubmit(images, query);
+			onFetchPhotos(images, query);
 
 			toggleLoader();
 
@@ -55,7 +60,11 @@ export default class Searchbar extends Component {
 					<button type="submit" className={css.button}>
 						<span className={css.label}></span>
 
-						<SearchIcon />
+						{
+							<svg width="32" height="32">
+								<use href={icons + "#search"}></use>
+							</svg>
+						}
 					</button>
 
 					<input

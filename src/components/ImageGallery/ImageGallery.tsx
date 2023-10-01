@@ -1,8 +1,10 @@
-import React from "react";
-
 import css from "./ImageGallery.module.css";
 
-export default function ImageGallery({ children }) {
+type Props = {
+	children: React.ReactNode;
+};
+
+export default function ImageGallery({ children }: Props) {
 	return (
 		<>
 			<ul className={css.gallery}>{children}</ul>

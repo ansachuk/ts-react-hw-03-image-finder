@@ -1,5 +1,3 @@
-import PropTypes from "prop-types";
-
 import css from "./Button.module.css";
 import fetchPhotos from "../../services/fetchPhotos";
 
@@ -18,10 +16,3 @@ export default function Button({ onFetch, query, page, toggleLoader }) {
 		</button>
 	);
 }
-
-Button.propTypes = {
-	onFetch: PropTypes.func.isRequired,
-	query: PropTypes.string.isRequired,
-	page: PropTypes.number.isRequired,
-	toggleLoader: PropTypes.func.isRequired,
-};

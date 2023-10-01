@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, KeyboardEvent, MouseEvent } from "react";
 
 import Searchbar from "../Searchbar/Searchbar";
 import ImageGallery from "../ImageGallery/ImageGallery";
@@ -8,9 +8,19 @@ import Button from "../Button/Button";
 import Modal from "../Modal/Modal";
 
 import makeSmoothScroll from "../../services/smoothScroll";
+import { Image } from "../../@types/types";
+
+type State = {
+	images: Image[];
+	isModalOpen: boolean;
+	showLoader: boolean;
+	currentModalImg: Image | object;
+	searchQuery: string;
+	currentPage: number;
+};
 
 export default class App extends Component {
-	state = {
+	state: State = {
 		images: [],
 		isModalOpen: false,
 		showLoader: false,
@@ -19,28 +29,28 @@ export default class App extends Component {
 		currentPage: 1,
 	};
 
-	onESCPress = e => {
+	onESCPress = (e: KeyboardEvent<Window>) => {
 		if (e.code === "Escape") {
 			return this.setState({ isModalOpen: false, currentModalImg: {} });
 		}
 	};
 
-	onLoadMoreClick = photos => {
+	onLoadMoreClick = (photos: Image[]) => {
 		this.setState(state => {
 			return {
-				images: [...state.images, ...photos],
-				currentPage: state.currentPage + 1,
+				images: [...(state as State).images, ...photos],
+				currentPage: (state as State).currentPage + 1,
 			};
 		});
 	};
 
-	toggleLoader = () => {
+	toggleLoader = (): void => {
 		this.setState(state => {
-			return { showLoader: !state.showLoader };
+			return { showLoader: !(state as State).showLoader };
 		});
 	};
 
-	onFetchPhotos = (photos, query) => {
+	onFetchPhotos = (photos: Image[], query: string): void => {
 		setTimeout(() => {
 			makeSmoothScroll();
 		}, 200);
@@ -48,7 +58,7 @@ export default class App extends Component {
 		this.setState({ images: [...photos], searchQuery: `${query}`, currentPage: 1 });
 	};
 
-	closeModal = e => {
+	closeModal = (e: MouseEvent<HTMLButtonElement>) => {
 		const { currentTarget, target } = e;
 
 		if (currentTarget === target) {
@@ -56,10 +66,10 @@ export default class App extends Component {
 		}
 	};
 
-	onImgClick = e => {
+	onImgClick = (e: MouseEvent<HTMLLIElement>): void => {
 		const { images } = this.state;
 
-		const currentImg = images.find(image => image.id === Number(e.target.id));
+		const currentImg = images.find(image => image.id === Number((e.target as HTMLImageElement).id));
 		this.setState({ currentModalImg: currentImg, isModalOpen: true });
 	};
 
@@ -76,7 +86,7 @@ export default class App extends Component {
 
 		return (
 			<>
-				<Searchbar onSubmit={onFetchPhotos} toggleLoader={toggleLoader}></Searchbar>
+				<Searchbar onFetchPhotos={onFetchPhotos} toggleLoader={toggleLoader}></Searchbar>
 
 				<ImageGallery>
 					{images.map(({ tags, webformatURL, id }) => (
@@ -86,9 +96,7 @@ export default class App extends Component {
 
 				<Loader visible={showLoader} />
 
-				{searchQuery && (
-					<Button toggleLoader={toggleLoader} onFetch={onLoadMoreClick} query={searchQuery} page={currentPage} />
-				)}
+				{searchQuery && <Button toggleLoader={toggleLoader} onFetch={onLoadMoreClick} query={searchQuery} page={currentPage} />}
 
 				{isModalOpen && <Modal onESCPress={onESCPress} closeModal={closeModal} currentModalImg={currentModalImg} />}
 			</>

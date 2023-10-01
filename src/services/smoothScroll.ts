@@ -1,4 +1,4 @@
-const makeSmoothScroll = () => {
+const makeSmoothScroll = (): void => {
 	window.scrollTo({
 		top: 0,
 		behavior: "smooth",

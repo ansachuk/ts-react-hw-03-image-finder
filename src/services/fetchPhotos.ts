@@ -1,16 +1,16 @@
 import axios from "axios";
 import { Notify } from "notiflix/build/notiflix-notify-aio";
+import { Data, Image } from "../@types/types";
 
 const AUTH_KEY = "34948813-296850008c19dad8d09f83fef";
 const PHOTOS_PER_PAGE = 12;
 axios.defaults.baseURL = "https://pixabay.com/api/";
 
-const fetchPhotos = async (query, page = 1) => {
+const fetchPhotos = async (query: string, page: number = 1): Promise<Image[]> => {
 	try {
-		const res = await axios.get(
-			`?key=${AUTH_KEY}&q=${query}&page=${page}&image_type=photo&orientation=horizontal&per_page=${PHOTOS_PER_PAGE}`,
-		);
-		const { hits, total } = res.data;
+		const res = await axios.get(`?key=${AUTH_KEY}&q=${query}&page=${page}&image_type=photo&orientation=horizontal&per_page=${PHOTOS_PER_PAGE}`);
+
+		const { hits, total } = res.data as Data;
 
 		if (page === 1) {
 			if (hits.length < PHOTOS_PER_PAGE) {
@@ -27,8 +27,8 @@ const fetchPhotos = async (query, page = 1) => {
 		}
 
 		return hits;
-	} catch (error) {
-		Notify.failure(`${error.message}`);
+	} catch (e) {
+		throw Notify.failure(`${(e as Error).message}`);
 	}
 };
 
